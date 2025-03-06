@@ -1,0 +1,54 @@
+# Maven generated files
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Eclipse / STS specific files
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# IntelliJ IDEA specific files
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# NetBeans specific files
+/nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# VS Code settings
+.vscode/
+
+# Nuxt.js / Node.js generated files
+.output/
+.data/
+.nuxt/
+.nitro/
+.cache/
+dist/
+node_modules/
+logs/
+*.log
+
+# System and miscellaneous files
+.DS_Store
+.fleet
+
+# Local environment files (keep .env.example)
+.env
+.env.*
+!.env.example
+
