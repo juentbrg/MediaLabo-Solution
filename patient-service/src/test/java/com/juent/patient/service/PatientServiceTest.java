@@ -1,7 +1,6 @@
 package com.juent.patient.service;
 
 import com.juent.patient.DTO.PatientDTO;
-import com.juent.patient.DTO.PatientUpdateDTO;
 import com.juent.patient.enums.GenderEnum;
 import com.juent.patient.exception.PatientNotFoundException;
 import com.juent.patient.model.Patient;
@@ -50,7 +49,7 @@ class PatientServiceTest {
     void findAllPatients_shouldReturnListOfPatients() {
         when(patientRepository.findAll()).thenReturn(List.of(patient));
 
-        List<PatientDTO> patients = patientService.findAllPatients();
+        List<Patient> patients = patientService.findAllPatients();
 
         assertNotNull(patients);
         assertEquals(1, patients.size());
@@ -62,7 +61,7 @@ class PatientServiceTest {
     void findAllPatients_shouldReturnEmptyList() {
         when(patientRepository.findAll()).thenReturn(List.of());
 
-        List<PatientDTO> patients = patientService.findAllPatients();
+        List<Patient> patients = patientService.findAllPatients();
 
         assertNotNull(patients);
         assertEquals(0, patients.size());
@@ -116,7 +115,7 @@ class PatientServiceTest {
 
     @Test
     void updatePatient_shouldReturnUpdatedPatient() {
-        PatientUpdateDTO updateDTO = new PatientUpdateDTO();
+        PatientDTO updateDTO = new PatientDTO();
         updateDTO.setAddress("456 New Street");
         updateDTO.setPhone("987654321");
 
@@ -132,7 +131,7 @@ class PatientServiceTest {
 
     @Test
     void updatePatient_shouldUpdateOnlyAddressIfPhoneIsNull() {
-        PatientUpdateDTO updateDTO = new PatientUpdateDTO();
+        PatientDTO updateDTO = new PatientDTO();
         updateDTO.setAddress("456 New Street");
         updateDTO.setPhone(null);
 
@@ -147,7 +146,7 @@ class PatientServiceTest {
 
     @Test
     void updatePatient_shouldUpdateOnlyPhoneIfAddressIsNull() {
-        PatientUpdateDTO updateDTO = new PatientUpdateDTO();
+        PatientDTO updateDTO = new PatientDTO();
         updateDTO.setAddress(null);
         updateDTO.setPhone("987654321");
 
@@ -162,7 +161,7 @@ class PatientServiceTest {
 
     @Test
     void updatePatient_shouldThrowNotFoundException() {
-        PatientUpdateDTO updateDTO = new PatientUpdateDTO();
+        PatientDTO updateDTO = new PatientDTO();
         when(patientRepository.findById("99")).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(PatientNotFoundException.class, () -> {

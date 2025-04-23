@@ -1,13 +1,11 @@
 package com.juent.patient.service;
 
 import com.juent.patient.DTO.PatientDTO;
-import com.juent.patient.DTO.PatientUpdateDTO;
 import com.juent.patient.exception.PatientNotFoundException;
 import com.juent.patient.model.Patient;
 import com.juent.patient.repository.PatientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +24,11 @@ public class PatientService {
     }
 
     @Transactional(readOnly = true)
-    public List<PatientDTO> findAllPatients() {
+    public List<Patient> findAllPatients() {
         logger.info("fetching all patients");
         List<Patient> patients = patientRepository.findAll();
         logger.info("found {} patients", patients.size());
-        return patients
-                .stream()
-                .map(PatientDTO::new)
-                .toList();
+        return patients;
     }
 
     @Transactional(readOnly = true)
@@ -64,16 +59,23 @@ public class PatientService {
     }
 
     @Transactional
-    public PatientDTO updatePatient(PatientUpdateDTO patientUpdateDTO, String id) {
+    public PatientDTO updatePatient(PatientDTO patientDTO, String id) {
         logger.info("Updating patient with id {}", id);
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new PatientNotFoundException(id));
 
-        if (patientUpdateDTO.getAddress() != null)
-            patient.setAddress(patientUpdateDTO.getAddress());
-
-        if (patientUpdateDTO.getPhone() != null)
-            patient.setPhone(patientUpdateDTO.getPhone());
+        if (patientDTO.getFirstName() != null)
+            patient.setFirstName(patientDTO.getFirstName());
+        if (patientDTO.getLastName() != null)
+            patient.setLastName(patientDTO.getLastName());
+        if (patientDTO.getBirthDate() != null)
+            patient.setBirthDate(LocalDate.parse(patientDTO.getBirthDate()));
+        if (patientDTO.getGender() != null)
+            patient.setGender(patientDTO.getGender());
+        if (patientDTO.getAddress() != null)
+            patient.setAddress(patientDTO.getAddress());
+        if (patientDTO.getPhone() != null)
+            patient.setPhone(patientDTO.getPhone());
 
         patientRepository.save(patient);
         return new PatientDTO(patient);

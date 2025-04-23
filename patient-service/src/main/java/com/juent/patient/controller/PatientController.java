@@ -1,7 +1,7 @@
 package com.juent.patient.controller;
 
 import com.juent.patient.DTO.PatientDTO;
-import com.juent.patient.DTO.PatientUpdateDTO;
+import com.juent.patient.model.Patient;
 import com.juent.patient.service.PatientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +22,10 @@ public class PatientController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<PatientDTO>> getPatients() {
+    public ResponseEntity<List<Patient>> getPatients() {
         logger.info("Fetching all patients");
 
-        List<PatientDTO> patients = patientService.findAllPatients();
+        List<Patient> patients = patientService.findAllPatients();
 
         if (patients.isEmpty()) {
             logger.warn("No patients found");
@@ -52,9 +52,9 @@ public class PatientController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<PatientDTO> updatePatient(@PathVariable String id, @RequestBody PatientUpdateDTO patientUpdateDTO) {
+    public ResponseEntity<PatientDTO> updatePatient(@PathVariable String id, @RequestBody PatientDTO patientDTO) {
         logger.info("Updating patient with id {}", id);
-        PatientDTO updatedPatient = patientService.updatePatient(patientUpdateDTO, id);
+        PatientDTO updatedPatient = patientService.updatePatient(patientDTO, id);
         logger.info("Patient with id {} updated successfully", id);
         return ResponseEntity.ok(updatedPatient);
     }

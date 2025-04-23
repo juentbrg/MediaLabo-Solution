@@ -1,9 +1,9 @@
 package com.juent.patient.controller;
 
 import com.juent.patient.DTO.PatientDTO;
-import com.juent.patient.DTO.PatientUpdateDTO;
 import com.juent.patient.enums.GenderEnum;
 import com.juent.patient.exception.PatientNotFoundException;
+import com.juent.patient.model.Patient;
 import com.juent.patient.service.PatientService;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,12 +30,14 @@ public class PatientControllerTest {
     private PatientService patientService;
 
     private PatientDTO patientDTO;
+    private Patient patient;
 
     @BeforeEach
     public void init() {
         mock = MockitoAnnotations.openMocks(this);
 
         patientDTO = new PatientDTO("John", "Doe", "1990-01-01", GenderEnum.MALE, "123 Main Street", "123456789");
+        patient = new Patient("12345", "John", "Doe", LocalDate.of(1990, Month.JANUARY, 1), GenderEnum.MALE, "123 Main Street", "123456789");
     }
 
     @AfterEach
@@ -45,9 +49,9 @@ public class PatientControllerTest {
 
     @Test
     public void getPatients_shouldReturnListOfPatients() {
-        when(patientService.findAllPatients()).thenReturn(List.of(patientDTO));
+        when(patientService.findAllPatients()).thenReturn(List.of(patient));
 
-        ResponseEntity<List<PatientDTO>> response = patientController.getPatients();
+        ResponseEntity<List<Patient>> response = patientController.getPatients();
 
         assertEquals(OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -59,7 +63,7 @@ public class PatientControllerTest {
     public void getPatients_shouldReturnNoContentWhenNoPatients() {
         when(patientService.findAllPatients()).thenReturn(List.of());
 
-        ResponseEntity<List<PatientDTO>> response = patientController.getPatients();
+        ResponseEntity<List<Patient>> response = patientController.getPatients();
 
         assertEquals(NO_CONTENT, response.getStatusCode());
         assertNull(response.getBody());
@@ -104,7 +108,7 @@ public class PatientControllerTest {
 
     @Test
     public void updatePatient_shouldReturnUpdatedPatient() {
-        PatientUpdateDTO updateDTO = new PatientUpdateDTO();
+        PatientDTO updateDTO = new PatientDTO();
         updateDTO.setAddress("456 New Street");
         updateDTO.setPhone("987654321");
 
@@ -119,7 +123,7 @@ public class PatientControllerTest {
 
     @Test
     public void updatePatient_shouldThrowNotFoundException() {
-        PatientUpdateDTO updateDTO = new PatientUpdateDTO();
+        PatientDTO updateDTO = new PatientDTO();
         when(patientService.updatePatient(updateDTO, "99")).thenThrow(new PatientNotFoundException("99"));
 
         Exception exception = assertThrows(PatientNotFoundException.class, () -> {

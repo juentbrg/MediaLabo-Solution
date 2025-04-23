@@ -11,12 +11,12 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor // Only used for tests
-@EqualsAndHashCode(of = "patientId")
+@EqualsAndHashCode(of = "id")
 @Generated
 @Document(collection = "patients")
 public class Patient {
     @Id
-    private String patientId;
+    private String id;
     private String firstName;
     private String lastName;
     private LocalDate birthDate;
