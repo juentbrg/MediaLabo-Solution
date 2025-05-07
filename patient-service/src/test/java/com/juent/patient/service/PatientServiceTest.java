@@ -53,7 +53,7 @@ class PatientServiceTest {
 
         assertNotNull(patients);
         assertEquals(1, patients.size());
-        assertEquals("John", patients.get(0).getFirstName());
+        assertEquals("John", patients.getFirst().getFirstName());
         verify(patientRepository, times(1)).findAll();
     }
 
@@ -168,7 +168,7 @@ class PatientServiceTest {
             patientService.updatePatient(updateDTO, "99");
         });
 
-        assertEquals("Patient with ID 99 not found.", exception.getMessage());
+        assertEquals("Patient with id 99 not found.", exception.getMessage());
         verify(patientRepository, times(1)).findById("99");
         verify(patientRepository, times(0)).save(any(Patient.class));
     }
@@ -192,7 +192,7 @@ class PatientServiceTest {
             patientService.deletePatient("99");
         });
 
-        assertEquals("Patient with ID 99 not found.", exception.getMessage());
+        assertEquals("Patient with id 99 not found.", exception.getMessage());
         verify(patientRepository, times(1)).existsById("99");
         verify(patientRepository, times(0)).deleteById(anyString());
     }

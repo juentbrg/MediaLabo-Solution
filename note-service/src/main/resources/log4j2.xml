@@ -6,8 +6,8 @@
         </Console>
 
         <RollingFile name="RollingFileAppender"
-                     fileName="./logs/medialabo-patient.log"
-                     filePattern="./logs/medialabo-patient-%d{yyyy-MM-dd}-%i.log.gz">
+                     fileName="./logs/medialabo-note.log"
+                     filePattern="./logs/medialabo-note-%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>

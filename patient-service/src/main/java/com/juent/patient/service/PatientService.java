@@ -54,8 +54,7 @@ public class PatientService {
             logger.info("saved patient {}", patient);
             return new PatientDTO(patient);
         }
-
-        throw new IllegalArgumentException("Missing required fields");
+        throw new IllegalArgumentException("Patient cannot be null");
     }
 
     @Transactional
@@ -77,8 +76,7 @@ public class PatientService {
         if (patientDTO.getPhone() != null)
             patient.setPhone(patientDTO.getPhone());
 
-        patientRepository.save(patient);
-        return new PatientDTO(patient);
+        return new PatientDTO(patientRepository.save(patient));
     }
 
     @Transactional

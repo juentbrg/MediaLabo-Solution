@@ -12,10 +12,10 @@
 		<relativePath/>
 	</parent>
 
-	<groupId>com.juent.patient</groupId>
-	<artifactId>patient-service</artifactId>
+	<groupId>com.juent</groupId>
+	<artifactId>note-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>patient-service</name>
+	<name>note-service</name>
 	<description>Openclassrooms course project 9</description>
 
 	<properties>

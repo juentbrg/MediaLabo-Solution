@@ -41,7 +41,7 @@ public class PatientControllerTest {
     }
 
     @AfterEach
-    public void destroy() throws Exception {
+    public void close() throws Exception {
         if (mock != null) {
             mock.close();
         }

@@ -40,6 +40,12 @@ public class PatientController {
     public ResponseEntity<PatientDTO> getPatientById(@PathVariable String id) {
         logger.info("Fetching patient with id {}", id);
         PatientDTO patientDTO = patientService.findPatientById(id);
+
+        if (null == patientDTO) {
+            logger.warn("Patient not found for id {}", id);
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity.ok(patientDTO);
     }
 
