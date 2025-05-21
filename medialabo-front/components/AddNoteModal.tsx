@@ -39,7 +39,7 @@ const AddNoteModal: FC<AddNoteModalProps> = ({
                 <textarea
                     name="note"
                     rows={4}
-                    className="w-full border rounded p-2"
+                    className="w-full border rounded p-2 outline-none border-[#d1d5db]"
                     placeholder="Contenu de la note…"
                     value={formData.note}
                     onChange={onChange}

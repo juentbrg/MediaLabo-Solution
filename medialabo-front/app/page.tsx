@@ -127,7 +127,7 @@ export default function HomePage(): JSX.Element {
   const handleEditSubmit = async (patient: Patient): Promise<void> => {
     if (!patient.id) return
     try {
-      await axios.put(`http://localhost:8080/api/patient/${patient.id}`, patient, {
+      await axios.put(`http://localhost:8080/api/patient/update/${patient.id}`, patient, {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       })
