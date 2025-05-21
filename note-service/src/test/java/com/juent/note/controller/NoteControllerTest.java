@@ -74,15 +74,15 @@ public class NoteControllerTest {
     }
 
     @Test
-    public void getNoteById_shouldReturnNote() {
-        when(noteService.findNoteById("1")).thenReturn(noteDTO);
+    public void getAllNoteByPatId_shouldReturnNote() {
+        when(noteService.findAllNoteByPatId("1")).thenReturn(List.of(note));
 
-        ResponseEntity<NoteDTO> response = noteController.getNoteById("1");
+        ResponseEntity<List<Note>> response = noteController.getAllNoteByPatId("1");
 
         assertEquals(OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("12345", response.getBody().getPatId());
-        verify(noteService, times(1)).findNoteById("1");
+        assertEquals("12345", response.getBody().getFirst().getPatId());
+        verify(noteService, times(1)).findAllNoteByPatId("1");
     }
 
     @Test

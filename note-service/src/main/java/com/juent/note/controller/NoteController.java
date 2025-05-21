@@ -37,16 +37,16 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<NoteDTO> getNoteById(@PathVariable String id) {
+    public ResponseEntity<List<Note>> getAllNoteByPatId(@PathVariable String id) {
         logger.info("fetching note with id {}", id);
-        NoteDTO noteDTO = noteService.findNoteById(id);
+        List<Note> notes = noteService.findAllNoteByPatId(id);
 
-        if (null == noteDTO) {
+        if (null == notes) {
             logger.warn("Note not found for id {}", id);
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(noteDTO);
+        return ResponseEntity.ok(notes);
     }
 
     @PostMapping("/insert")

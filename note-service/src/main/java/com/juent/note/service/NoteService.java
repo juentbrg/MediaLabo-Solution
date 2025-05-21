@@ -30,11 +30,11 @@ public class NoteService {
     }
 
     @Transactional(readOnly = true)
-    public NoteDTO findNoteById(String id) {
-        logger.info("fetching note with id {}", id);
-        return noteRepository.findById(id)
-                .map(NoteDTO::new)
-                .orElseThrow(() -> new IllegalArgumentException("Note not found for id " + id));
+    public List<Note> findAllNoteByPatId(String patId) {
+        logger.info("fetching note with id {}", patId);
+        List<Note> notes =  noteRepository.findAllByPatId(patId);
+        logger.info("found {} notes", notes.size());
+        return notes;
     }
 
     @Transactional

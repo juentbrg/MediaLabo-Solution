@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,25 +65,23 @@ public class NoteServiceTest {
 
     @Test
     public void findNoteById_shouldReturnNoteDTO() {
-        when(noteRepository.findById("1")).thenReturn(Optional.of(note));
+        when(noteRepository.findAllByPatId("1")).thenReturn(List.of(note));
 
-        NoteDTO result = noteService.findNoteById("1");
+        List<Note> result = noteService.findAllNoteByPatId("1");
 
         assertNotNull(result);
-        assertEquals("12345", result.getPatId());
-        verify(noteRepository, times(1)).findById("1");
+        assertEquals("12345", result.getFirst().getPatId());
+        verify(noteRepository, times(1)).findAllByPatId("1");
     }
 
     @Test
-    public void findNoteById_shouldThrowExceptionIfNotFound() {
-        when(noteRepository.findById("99")).thenReturn(Optional.empty());
+    public void findNoteById_shouldReturnEmptyListIfNoResult() {
+        when(noteRepository.findAllByPatId("99")).thenReturn(Collections.emptyList());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            noteService.findNoteById("99");
-        });
+        List<Note> notes = noteService.findAllNoteByPatId("99");
 
-        assertEquals("Note not found for id 99", exception.getMessage());
-        verify(noteRepository, times(1)).findById("99");
+        assertIterableEquals(Collections.emptyList(), notes);
+        verify(noteRepository, times(1)).findAllByPatId("99");
     }
 
     @Test
