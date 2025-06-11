@@ -17,6 +17,13 @@ interface Note {
     note: string
 }
 
+interface AssessmentResponse {
+    patientId: string
+    age: number
+    triggerCount: number
+    risk: string
+}
+
 const PatientDetailPage: FC = () => {
     const { id } = useParams() as { id: string }
     const router = useRouter()
@@ -24,6 +31,7 @@ const PatientDetailPage: FC = () => {
     const [patient, setPatient] = useState<PatientType | null>(null)
     const [notes, setNotes] = useState<Note[]>([])
     const [loading, setLoading] = useState<boolean>(true)
+    const [riskResult, setRiskResult] = useState<AssessmentResponse | null>(null)
 
     const [isAddOpen, setIsAddOpen] = useState<boolean>(false)
     const [newNote, setNewNote] = useState<NoteForm>({
@@ -112,6 +120,20 @@ const PatientDetailPage: FC = () => {
         )
     }
 
+    const handleRiskEvaluation = async (): Promise<void> => {
+        try {
+            const res = await axios.get<AssessmentResponse>(
+                `http://localhost:8080/api/assess/${id}`,
+                { withCredentials: true }
+            )
+
+            const updatedAssessment = { ...res.data, patientId: id }
+            setRiskResult(updatedAssessment)
+        } catch (error) {
+            console.error("Erreur lors de l'évaluation du risque :", error)
+        }
+    }
+
     if (loading) {
         return <p className="p-6 text-center">Chargement…</p>
     }
@@ -141,13 +163,21 @@ const PatientDetailPage: FC = () => {
             <h1 className="text-3xl font-bold mb-6">
                 Détail de {patient.firstName} {patient.lastName}
             </h1>
-            <button
-                onClick={() => setIsAddOpen(true)}
-                className="mb-6 px-4 py-2 bg-blue-500 text-white rounded-lg shadow cursor-pointer hover:bg-blue-600 transition"
-            >
-                Ajouter une note
-            </button>
-            <section className="bg-white rounded-lg shadow p-6 mb-8">
+            <div className="w-full flex justify-between">
+                <button
+                    onClick={() => setIsAddOpen(true)}
+                    className="mb-6 px-4 py-2 bg-blue-500 text-white rounded-lg shadow cursor-pointer hover:bg-blue-600 transition"
+                >
+                    Ajouter une note
+                </button>
+                <button
+                    onClick={handleRiskEvaluation}
+                    className="mb-6 px-4 py-2 bg-blue-500 text-white rounded-lg shadow cursor-pointer hover:bg-blue-600 transition"
+                >
+                    Évaluer le risque de diabète
+                </button>
+            </div>
+            <section className="bg-white rounded-lg shadow p-6 mb-4">
                 <h2 className="text-2xl font-semibold mb-4">
                     Infos patient
                 </h2>
@@ -163,11 +193,18 @@ const PatientDetailPage: FC = () => {
                         ⚧ Genre :{' '}
                         {patient.gender === 'MALE' ? 'Homme' : 'Femme'}
                     </li>
-                    <li>
-                        ⚠️ Risque : {patient.risque ?? '—'}
-                    </li>
                 </ul>
             </section>
+            {riskResult && (
+                <section className="mt-4 mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded">
+                    <h2 className="text-2xl font-semibold mb-4">Évaluation de {patient.firstName}</h2>
+                    <ul className="mt-2 space-y-1">
+                        <li>👤 Âge : {riskResult.age}</li>
+                        <li>⚠️ Risque : <strong>{riskResult.risk}</strong></li>
+                        <li>🧬 Déclencheurs détectés : {riskResult.triggerCount}</li>
+                    </ul>
+                </section>
+            )}
             <section className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-2xl font-semibold mb-4">
                     Notes associées

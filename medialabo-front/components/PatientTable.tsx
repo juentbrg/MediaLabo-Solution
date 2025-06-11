@@ -13,7 +13,6 @@ export interface Patient {
     address?: string
     phone?: string
     gender: 'MALE' | 'FEMALE'
-    risque?: string
 }
 
 interface PatientTableProps {
@@ -45,11 +44,10 @@ export default function PatientTable({ patients, loading, onView, onUpdate, onDe
                     <table className="min-w-full">
                         <thead className="bg-gray-100 text-left text-sm text-gray-600">
                         <tr>
-                            <th className="w-1/5 px-6 py-3">Nom</th>
-                            <th className="w-1/5 px-6 py-3">Prénom</th>
-                            <th className="w-1/5 px-6 py-3">Âge</th>
-                            <th className="w-1/5 px-6 py-3">Risque</th>
-                            <th className="w-1/5 px-6 py-3">Actions</th>
+                            <th className="w-1/4 px-6 py-3">Nom</th>
+                            <th className="w-1/4 px-6 py-3">Prénom</th>
+                            <th className="w-1/4 px-6 py-3">Âge</th>
+                            <th className="w-1/4 px-6 py-3">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -57,31 +55,22 @@ export default function PatientTable({ patients, loading, onView, onUpdate, onDe
                             patients.map((patient, index) => {
                                 const birthDate = new Date(patient.birthDate)
                                 const age = new Date().getFullYear() - birthDate.getFullYear()
+
                                 return (
                                     <tr key={index} className="border-t border-gray-200 hover:bg-gray-50">
                                         <td className="px-6 py-4">{patient.lastName}</td>
                                         <td className="px-6 py-4">{patient.firstName}</td>
                                         <td className="px-6 py-4">{age} ans</td>
                                         <td className="px-6 py-4">
-                                            <span className={`font-semibold ${
-                                                patient.risque === 'In Danger' ? 'text-red-600' :
-                                                    patient.risque === 'EarlyOnset' ? 'text-orange-500' :
-                                                        patient.risque === 'Borderline' ? 'text-blue-500' :
-                                                            'text-gray-500'
-                                            }`}>
-                                              {patient.risque || '—'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
                                             <button
                                                 onClick={() => onView(patient.id as string)}
                                                 className="px-1.5 py-1.5 mr-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600"
                                             >
-                                                <Image src={eyeIcon} alt="Modifier" width={19} height={19} />
+                                                <Image src={eyeIcon} alt="Voir" width={19} height={19} />
                                             </button>
                                             <button
                                                 onClick={() => onUpdate(patient)}
-                                                className="px-1.5 py-1.5 mr-2 bg-orange-500 text-white rounded cursor-pointer hover:bg-orange-600"
+                                                className="px-1.5 py-1.5 mr-2 bg-orange-400 text-white rounded cursor-pointer hover:bg-orange-500"
                                             >
                                                 <Image src={editIcon} alt="Modifier" width={19} height={19} />
                                             </button>
@@ -97,7 +86,7 @@ export default function PatientTable({ patients, loading, onView, onUpdate, onDe
                             })
                         ) : (
                             <tr>
-                                <td colSpan={5} className="text-center py-4 text-gray-500">
+                                <td colSpan={4} className="text-center py-4 text-gray-500">
                                     Aucun patient trouvé.
                                 </td>
                             </tr>
