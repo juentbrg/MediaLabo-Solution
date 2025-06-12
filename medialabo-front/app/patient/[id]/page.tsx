@@ -34,10 +34,8 @@ const PatientDetailPage: FC = () => {
     const [riskResult, setRiskResult] = useState<AssessmentResponse | null>(null)
 
     const [isAddOpen, setIsAddOpen] = useState<boolean>(false)
-    const [newNote, setNewNote] = useState<NoteForm>({
-        patId: id,
-        note: '',
-    })
+    const emptyNote: NoteForm = { patId: id, note: '' }
+    const [newNote, setNewNote] = useState<NoteForm>(emptyNote)
 
     const [isEditOpen, setIsEditOpen] = useState<boolean>(false)
     const [currentEdit, setCurrentEdit] = useState<EditNoteForm | null>(null)
@@ -48,10 +46,10 @@ const PatientDetailPage: FC = () => {
         const fetchData = async (): Promise<void> => {
             try {
                 const [pRes, nRes] = await Promise.all([
-                    axios.get<PatientType>(`http://localhost:8080/api/patient/${id}`, {
+                    axios.get<PatientType>(`${process.env.NEXT_PUBLIC_API_URL}/api/patient/${id}`, {
                         withCredentials: true,
                     }),
-                    axios.get<Note[]>(`http://localhost:8080/api/note/${id}`, {
+                    axios.get<Note[]>(`${process.env.NEXT_PUBLIC_API_URL}/api/note/${id}`, {
                         withCredentials: true,
                     }),
                 ])
@@ -67,29 +65,27 @@ const PatientDetailPage: FC = () => {
         fetchData()
     }, [id])
 
-    const handleAddChange = (
-        e: ChangeEvent<HTMLTextAreaElement>
-    ): void => {
-        setNewNote((prev) => ({ ...prev, note: e.target.value }))
+    const handleAddChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
+        setNewNote(prev => ({ ...prev, note: e.target.value }))
     }
 
     const handleAddSubmit = async (form: NoteForm): Promise<void> => {
-        await axios.post<Note>('http://localhost:8080/api/note/insert', form, {
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/note/insert`, form, {
             withCredentials: true,
         })
         setIsAddOpen(false)
-        setNewNote({ patId: id, note: '' })
-        const nRes = await axios.get<Note[]>(`http://localhost:8080/api/note/${id}`, {
+        setNewNote(emptyNote)
+        const nRes = await axios.get<Note[]>(`${process.env.NEXT_PUBLIC_API_URL}/api/note/${id}`, {
             withCredentials: true,
         })
         setNotes(nRes.data)
     }
 
     const handleDeleteNote = async (noteId: string): Promise<void> => {
-        await axios.delete(`http://localhost:8080/api/note/delete/${noteId}`, {
+        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/note/delete/${noteId}`, {
             withCredentials: true,
         })
-        setNotes((prev) => prev.filter((n) => n.id !== noteId))
+        setNotes(prev => prev.filter(n => n.id !== noteId))
     }
 
     const handleEditClick = (note: Note): void => {
@@ -97,33 +93,27 @@ const PatientDetailPage: FC = () => {
         setIsEditOpen(true)
     }
 
-    const handleEditChange = (
-        e: ChangeEvent<HTMLTextAreaElement>
-    ): void => {
+    const handleEditChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
         if (currentEdit) {
             setCurrentEdit({ ...currentEdit, note: e.target.value })
         }
     }
 
-    const handleEditSubmit = async (
-        form: EditNoteForm
-    ): Promise<void> => {
-        await axios.put<Note>(`http://localhost:8080/api/note/update/${form.id}`, form, {
+    const handleEditSubmit = async (form: EditNoteForm): Promise<void> => {
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/note/update/${form.id}`, form, {
             withCredentials: true,
         })
         setIsEditOpen(false)
         setCurrentEdit(null)
-        setNotes((prev) =>
-            prev.map((n) =>
-                n.id === form.id ? { ...n, note: form.note } : n
-            )
+        setNotes(prev =>
+            prev.map(n => (n.id === form.id ? { ...n, note: form.note } : n))
         )
     }
 
     const handleRiskEvaluation = async (): Promise<void> => {
         try {
             const res = await axios.get<AssessmentResponse>(
-                `http://localhost:8080/api/assess/${id}`,
+                `${process.env.NEXT_PUBLIC_API_URL}/api/assess/${id}`,
                 { withCredentials: true }
             )
 
@@ -134,15 +124,22 @@ const PatientDetailPage: FC = () => {
         }
     }
 
+    const handleAddClose = (): void => {
+        setIsAddOpen(false)
+        setNewNote(emptyNote)
+    }
+
+    const handleEditClose = (): void => {
+        setIsEditOpen(false)
+        setCurrentEdit(null)
+    }
+
     if (loading) {
         return <p className="p-6 text-center">Chargement…</p>
     }
+
     if (!patient) {
-        return (
-            <p className="p-6 text-center text-red-600">
-                Patient introuvable.
-            </p>
-        )
+        return <p className="p-6 text-center text-red-600">Patient introuvable.</p>
     }
 
     return (
@@ -151,18 +148,14 @@ const PatientDetailPage: FC = () => {
                 onClick={() => router.push('/')}
                 className="mb-6 inline-flex items-center px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 transition"
             >
-                <Image
-                    src={arrowLeft}
-                    alt="Retour à la liste"
-                    width={20}
-                    height={20}
-                    className="mr-2"
-                />
+                <Image src={arrowLeft} alt="Retour à la liste" width={20} height={20} className="mr-2" />
                 Retour à la liste
             </button>
+
             <h1 className="text-3xl font-bold mb-6">
                 Détail de {patient.firstName} {patient.lastName}
             </h1>
+
             <div className="w-full flex justify-between">
                 <button
                     onClick={() => setIsAddOpen(true)}
@@ -177,24 +170,17 @@ const PatientDetailPage: FC = () => {
                     Évaluer le risque de diabète
                 </button>
             </div>
+
             <section className="bg-white rounded-lg shadow p-6 mb-4">
-                <h2 className="text-2xl font-semibold mb-4">
-                    Infos patient
-                </h2>
+                <h2 className="text-2xl font-semibold mb-4">Infos patient</h2>
                 <ul className="space-y-2 text-gray-800">
                     <li>🎂 Date de naissance : {patient.birthDate}</li>
-                    <li>
-                        🏠 Adresse : {patient.address ?? '—'}
-                    </li>
-                    <li>
-                        📞 Téléphone : {patient.phone ?? '—'}
-                    </li>
-                    <li>
-                        ⚧ Genre :{' '}
-                        {patient.gender === 'MALE' ? 'Homme' : 'Femme'}
-                    </li>
+                    <li>🏠 Adresse : {patient.address ?? '—'}</li>
+                    <li>📞 Téléphone : {patient.phone ?? '—'}</li>
+                    <li>⚧ Genre : {patient.gender === 'MALE' ? 'Homme' : 'Femme'}</li>
                 </ul>
             </section>
+
             {riskResult && (
                 <section className="mt-4 mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded">
                     <h2 className="text-2xl font-semibold mb-4">Évaluation de {patient.firstName}</h2>
@@ -205,66 +191,50 @@ const PatientDetailPage: FC = () => {
                     </ul>
                 </section>
             )}
+
             <section className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-2xl font-semibold mb-4">
-                    Notes associées
-                </h2>
+                <h2 className="text-2xl font-semibold mb-4">Notes associées</h2>
                 {notes.length > 0 ? (
                     <ul className="space-y-4">
-                        {notes.map((n) => (
-                            <li
-                                key={n.id}
-                                className="flex justify-between items-start border-b pb-2"
-                            >
-                                <p className="italic text-gray-700 flex-1">
-                                    {n.note}
-                                </p>
+                        {notes.map(n => (
+                            <li key={n.id} className="flex justify-between items-start border-b pb-2">
+                                <p className="italic text-gray-700 flex-1">{n.note}</p>
                                 <div className="flex items-center space-x-2 ml-4">
                                     <button
                                         onClick={() => handleEditClick(n)}
                                         className="p-1 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 transition"
                                         aria-label="Modifier note"
                                     >
-                                        <Image
-                                            src={editIcon}
-                                            alt=""
-                                            width={16}
-                                            height={16}
-                                        />
+                                        <Image src={editIcon} alt="" width={16} height={16} />
                                     </button>
                                     <button
                                         onClick={() => handleDeleteNote(n.id)}
                                         className="p-1 bg-red-500 text-white rounded cursor-pointer hover:bg-red-600 transition"
                                         aria-label="Supprimer note"
                                     >
-                                        <Image
-                                            src={trashIcon}
-                                            alt=""
-                                            width={16}
-                                            height={16}
-                                        />
+                                        <Image src={trashIcon} alt="" width={16} height={16} />
                                     </button>
                                 </div>
                             </li>
                         ))}
                     </ul>
                 ) : (
-                    <p className="text-gray-500">
-                        Aucune note pour ce patient.
-                    </p>
+                    <p className="text-gray-500">Aucune note pour ce patient.</p>
                 )}
             </section>
+
             <AddNoteModal
                 isOpen={isAddOpen}
-                onClose={() => setIsAddOpen(false)}
+                onClose={handleAddClose}
                 onSubmit={handleAddSubmit}
                 formData={newNote}
                 onChange={handleAddChange}
             />
+
             {currentEdit && (
                 <EditNoteModal
                     isOpen={isEditOpen}
-                    onClose={() => setIsEditOpen(false)}
+                    onClose={handleEditClose}
                     onSubmit={handleEditSubmit}
                     formData={currentEdit}
                     onChange={handleEditChange}

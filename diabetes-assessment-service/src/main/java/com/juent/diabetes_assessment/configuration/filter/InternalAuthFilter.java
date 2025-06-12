@@ -19,7 +19,7 @@ public class InternalAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = request.getHeader("X-Internal-Auth");
-        if (!expectedToken.equals(token)) {
+        if (expectedToken == null || !expectedToken.equals(token)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
             return;
         }

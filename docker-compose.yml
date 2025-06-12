@@ -1,0 +1,68 @@
+services:
+
+  mongo:
+   image: mongo
+   container_name: mongo
+   volumes:
+    - mongo_data:/data/db
+   networks:
+    - ms-network
+
+  patient-service:
+    build:
+      context: ./patient-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongo
+    networks:
+      - ms-network
+
+  note-service:
+    build:
+      context: ./note-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongo
+    networks:
+      - ms-network
+
+  diabetes-assessment-service:
+    build:
+      context: ./diabetes-assessment-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - patient-service
+      - note-service
+    networks:
+      - ms-network
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - patient-service
+      - note-service
+      - diabetes-assessment-service
+    networks:
+      - ms-network
+
+  frontend:
+    build:
+      context: ./medialabo-front
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gateway-service
+    networks:
+      - ms-network
+
+networks:
+  ms-network:
+
+volumes:
+  mongo_data:

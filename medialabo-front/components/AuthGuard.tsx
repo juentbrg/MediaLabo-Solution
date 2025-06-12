@@ -16,11 +16,11 @@ const AuthGuard: FC<AuthGuardProps> = ({ children }) => {
     useEffect(() => {
         const checkAuth = async (): Promise<void> => {
             try {
-                const response = await axios.get<void>('http://localhost:8080/api/patient', {
+                const response = await axios.get<void>(`${process.env.NEXT_PUBLIC_API_URL}/api/patient`, {
                     withCredentials: true,
                 })
 
-                if (response.status === 200) {
+                if (response.status === 200 || response.status === 204) {
                     setIsAuthenticated(true)
                 } else {
                     throw new Error(`Unexpected status code: ${response.status}`)

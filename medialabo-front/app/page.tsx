@@ -6,7 +6,7 @@ import AuthGuard from '@/components/AuthGuard'
 import AddPatientModal from '@/components/AddPatientModal'
 import EditPatientModal from '@/components/EditPatientModal'
 import PatientTable from '@/components/PatientTable'
-import {useRouter} from "next/navigation";
+import {useRouter} from "next/navigation"
 
 export interface Patient {
   id?: string
@@ -19,6 +19,15 @@ export interface Patient {
   risque?: string
 }
 
+const emptyPatient: Patient = {
+  firstName: '',
+  lastName: '',
+  birthDate: '',
+  address: '',
+  phone: '',
+  gender: 'MALE',
+}
+
 export default function HomePage(): JSX.Element {
   const router = useRouter()
   const [patients, setPatients] = useState<Patient[]>([])
@@ -26,30 +35,15 @@ export default function HomePage(): JSX.Element {
   const [shouldRefresh, setShouldRefresh] = useState<boolean>(false)
 
   const [isAddOpen, setIsAddOpen] = useState<boolean>(false)
-  const [addForm, setAddForm] = useState<Patient>({
-    firstName: '',
-    lastName: '',
-    birthDate: '',
-    address: '',
-    phone: '',
-    gender: 'MALE',
-  })
+  const [addForm, setAddForm] = useState<Patient>(emptyPatient)
 
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false)
-  const [editForm, setEditForm] = useState<Patient>({
-    id: undefined,
-    firstName: '',
-    lastName: '',
-    birthDate: '',
-    address: '',
-    phone: '',
-    gender: 'MALE',
-  })
+  const [editForm, setEditForm] = useState<Patient>({ id: undefined, ...emptyPatient })
 
   const fetchPatients = async (): Promise<void> => {
     setLoading(true)
     try {
-      const res = await axios.get<Patient[]>('http://localhost:8080/api/patient', {
+      const res = await axios.get<Patient[]>(`${process.env.NEXT_PUBLIC_API_URL}/api/patient`, {
         withCredentials: true,
       })
       setPatients(Array.isArray(res.data) ? res.data : [])
@@ -74,19 +68,12 @@ export default function HomePage(): JSX.Element {
 
   const handleAddSubmit = async (patient: Patient): Promise<void> => {
     try {
-      await axios.post('http://localhost:8080/api/patient/insert', patient, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/patient/insert`, patient, {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       })
       setIsAddOpen(false)
-      setAddForm({
-        firstName: '',
-        lastName: '',
-        birthDate: '',
-        address: '',
-        phone: '',
-        gender: 'MALE',
-      })
+      setAddForm(emptyPatient)
       setShouldRefresh(true)
     } catch (err) {
       console.error('Erreur ajout patient', err)
@@ -97,20 +84,17 @@ export default function HomePage(): JSX.Element {
     router.push(`/patient/${id}`)
   }
 
-  const handleAddChange = (
-      e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ): void => {
+  const handleAddChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     setAddForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
-  const handleEditChange = (
-      e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ): void => {
+
+  const handleEditChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     setEditForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   const handleDeletePatient = async (id: string): Promise<void> => {
     try {
-      await axios.delete(`http://localhost:8080/api/patient/delete/${id}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/patient/delete/${id}`, {
         withCredentials: true,
       })
       setShouldRefresh(true)
@@ -127,24 +111,26 @@ export default function HomePage(): JSX.Element {
   const handleEditSubmit = async (patient: Patient): Promise<void> => {
     if (!patient.id) return
     try {
-      await axios.put(`http://localhost:8080/api/patient/update/${patient.id}`, patient, {
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/patient/update/${patient.id}`, patient, {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       })
       setIsEditOpen(false)
-      setEditForm({
-        id: undefined,
-        firstName: '',
-        lastName: '',
-        birthDate: '',
-        address: '',
-        phone: '',
-        gender: 'MALE',
-      })
+      setEditForm({ id: undefined, ...emptyPatient })
       setShouldRefresh(true)
     } catch (err) {
       console.error('Erreur mise à jour patient', err)
     }
+  }
+
+  const handleAddClose = (): void => {
+    setIsAddOpen(false)
+    setAddForm(emptyPatient)
+  }
+
+  const handleEditClose = (): void => {
+    setIsEditOpen(false)
+    setEditForm({ id: undefined, ...emptyPatient })
   }
 
   return (
@@ -160,7 +146,7 @@ export default function HomePage(): JSX.Element {
 
         <AddPatientModal
             isOpen={isAddOpen}
-            onClose={() => setIsAddOpen(false)}
+            onClose={handleAddClose}
             onSubmit={handleAddSubmit}
             formData={addForm}
             onChange={handleAddChange}
@@ -168,7 +154,7 @@ export default function HomePage(): JSX.Element {
 
         <EditPatientModal
             isOpen={isEditOpen}
-            onClose={() => setIsEditOpen(false)}
+            onClose={handleEditClose}
             onSubmit={handleEditSubmit}
             formData={editForm}
             onChange={handleEditChange}
