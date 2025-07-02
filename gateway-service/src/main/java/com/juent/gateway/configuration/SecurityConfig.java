@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .pathMatchers("/login").permitAll()
                         .pathMatchers("/api/patient/**").authenticated()
                         .pathMatchers("/api/note/**").authenticated()
+                        .pathMatchers("/api/assess/**").authenticated()
                         .anyExchange().authenticated()
                 )
                 .formLogin(form -> form

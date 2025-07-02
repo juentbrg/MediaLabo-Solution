@@ -17,6 +17,11 @@ services:
       - mongo
     networks:
       - ms-network
+    environment:
+      - INTERNAL_AUTH_TOKEN=5cd9b5e6-fe30-4b2d-a0c0-0095e03fa8c5
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=patient_db
 
   note-service:
     build:
@@ -27,6 +32,11 @@ services:
       - mongo
     networks:
       - ms-network
+    environment:
+      - INTERNAL_AUTH_TOKEN=5cd9b5e6-fe30-4b2d-a0c0-0095e03fa8c5
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=note_db
 
   diabetes-assessment-service:
     build:
@@ -38,6 +48,8 @@ services:
       - note-service
     networks:
       - ms-network
+    environment:
+      - INTERNAL_AUTH_TOKEN=5cd9b5e6-fe30-4b2d-a0c0-0095e03fa8c5
 
   gateway-service:
     build:
@@ -50,6 +62,10 @@ services:
       - diabetes-assessment-service
     networks:
       - ms-network
+    environment:
+      - INTERNAL_AUTH_TOKEN=5cd9b5e6-fe30-4b2d-a0c0-0095e03fa8c5
+      - USER=user
+      - PASSWORD=userpass
 
   frontend:
     build:
