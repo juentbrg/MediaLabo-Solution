@@ -1,12 +1,12 @@
 services:
 
   mongo:
-   image: mongo
-   container_name: mongo
-   volumes:
-    - mongo_data:/data/db
-   networks:
-    - ms-network
+    image: mongo
+    container_name: mongo
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - ms-network
 
   patient-service:
     build:
@@ -64,8 +64,6 @@ services:
       - ms-network
     environment:
       - INTERNAL_AUTH_TOKEN=5cd9b5e6-fe30-4b2d-a0c0-0095e03fa8c5
-      - USER=user
-      - PASSWORD=userpass
 
   frontend:
     build:
